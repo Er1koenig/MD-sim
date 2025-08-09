@@ -7,15 +7,13 @@
   <meta name="description" content="Atomistic simulation of a CrCoNi medium-entropy alloy with a gradient nano‑grained structure under cryogenic tensile deformation, plus a robust grain‑rotation analysis pipeline." />
   <meta name="author" content="TAO Yuhao" />
 
-  <!-- Better font delivery (same stack as your homepage) -->
+  <!-- Fonts & icons to match your homepage -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,600;0,700;1,600;1,700&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet" />
-
-  <!-- Icons (Font Awesome 6 Free) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-RhCeKEeyiLdZ28yY7mVt8XzfnOz2bNqsTP7PvpB3qHwD6PPV6cO9HcL7JQhN4F5m2dlHtb1zGuUHmXn4b8vLAw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-  <!-- Optional: MathJax for LaTeX rendering -->
+  <!-- Optional LaTeX rendering -->
   <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
@@ -61,6 +59,7 @@
       margin:0; background:var(--bg); color:var(--text);
       font-family:var(--font-sans); font-size:var(--step-0); line-height:1.7; letter-spacing:.01em;
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      padding-top:60px;
     }
 
     a{ color: var(--theme-color-light); text-decoration: underline transparent 2px; text-underline-offset:3px; transition: color .2s, text-decoration-color .2s; }
@@ -73,7 +72,7 @@
 
     .container{ max-width:1100px; margin:0 auto; padding:0 1.2rem; }
 
-    /* ======= Glassy top header (consistent) ======= */
+    /* ======= Glassy top header (no navigation) ======= */
     #site-header{ position:fixed; inset:0 0 auto 0; height:60px; z-index:1000; display:flex; align-items:center; }
     #site-header .wrap{ width:100%; display:grid; grid-template-columns:auto 1fr auto; gap:1rem; align-items:center; padding:0 .9rem; }
     body:not(.scrolled) #site-header{ background:linear-gradient(180deg, color-mix(in srgb, var(--theme-color) 6%, rgba(255,255,255,.58)) 0%, color-mix(in srgb, var(--theme-color) 6%, rgba(255,255,255,.48)) 100%); border-bottom:1px solid color-mix(in srgb, var(--theme-color) 12%, rgba(0,0,0,.04)); box-shadow:0 1px 2px rgba(0,0,0,.04),0 6px 16px rgba(0,0,0,.05); backdrop-filter: blur(12px) saturate(140%) contrast(1.04); -webkit-backdrop-filter: blur(12px) saturate(140%) contrast(1.04); }
@@ -85,180 +84,93 @@
     .brand .logo{ width:26px; height:26px; display:grid; place-items:center; border-radius:6px; background: color-mix(in srgb, var(--theme-color) 16%, #fff); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--theme-color) 30%, rgba(0,0,0,.08)); font-size:.95rem; }
     .brand span{ color: var(--theme-color); letter-spacing:.02em; }
 
-    nav.site-nav ul{ display:flex; align-items:center; gap:1.2rem; list-style:none; margin:0; padding:0; }
-    nav.site-nav a{ color:#4b5563; text-decoration:none; font-weight:500; font-size:clamp(.92rem, .2vw + .84rem, 1rem); }
-    nav.site-nav a:hover, nav.site-nav a.active{ color:var(--theme-color); }
-    :root.dark nav.site-nav a{ color: var(--muted); }
-
     .spacer{ height:1px; }
 
-    /* Theme button (single-cycle: light → dark → auto) */
+    /* Theme button */
     .theme-btn{ display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:9999px; border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.65); backdrop-filter: blur(8px) saturate(140%); -webkit-backdrop-filter: blur(8px) saturate(140%); cursor:pointer; font-size:1rem; line-height:1; color:#333; transition: background .2s, border-color .2s, transform .02s, opacity .2s; opacity:.95; }
     .theme-btn:hover{ opacity:1; border-color:rgba(0,0,0,.2) }
     .theme-btn:active{ transform: translateY(1px); }
     :root.dark .theme-btn{ background: rgba(20,24,31,.72); border-color: rgba(255,255,255,.12); color: var(--text); }
 
-    /* ======= Masthead ======= */
-    .masthead{ position:relative; height: 56vh; min-height: 380px; display:grid; place-items:center; text-align:center; color:#F3F2E3; background: radial-gradient(110% 80% at 50% 46%, rgba(0,0,0,.12) 0%, rgba(0,0,0,.32) 52%, rgba(0,0,0,.6) 100%), url('image/header.jpg') center/cover no-repeat; }
-    .masthead::after{ content:""; position:absolute; inset:0; background: linear-gradient(180deg, rgba(11,47,91,.18) 0%, rgba(11,47,91,.22) 55%, rgba(11,47,91,.18) 100%); box-shadow: inset 0 0 80px rgba(0,0,0,.18); }
-    :root.dark .masthead{ text-shadow: 0 1px 16px rgba(0,0,0,.28); }
-    .masthead .inner{ position:relative; z-index:1; padding:0 1rem; }
-    .masthead h1{ font-size: clamp(2.1rem, 4.5vw, 3.8rem); margin:.2rem 0; font-weight:700; }
-    .masthead .subtitle{ font-size: clamp(1rem, 0.7vw + .9rem, 1.2rem); opacity:.95; letter-spacing:.4px; }
-    .scroll-down{ display:inline-block; margin-top:1rem; font-size:1.35rem; color:#F3F2E3; text-decoration:none; animation:scrollHint 1.2s infinite; }
-    .scroll-down:hover{ color: var(--theme-color); text-decoration:none; }
-    @keyframes scrollHint{ 0%{transform:translateY(0)} 50%{transform:translateY(6px)} }
-
     /* ======= Sections ======= */
     section[id]{ scroll-margin-top: 88px; }
     .section{ padding: 2.2rem 0; }
-
     .section-title{ position:relative; font-size: var(--step-2); margin: 0 0 1rem; }
     .section-title::after{ content:""; position:absolute; left:0; bottom:-.45rem; width:3rem; height:3px; background:var(--theme-color); border-radius:1px; }
 
-    /* Lead intro block */
-    .lead{ display:grid; grid-template-columns: 1.5fr .9fr; gap:1.4rem; align-items:start; }
-    @media (max-width: 900px){ .lead{ grid-template-columns: 1fr; } }
-
-    .card{ background: var(--surface); border-radius: 14px; padding: 1rem 1.1rem; box-shadow: var(--shadow); border: 1px solid var(--border); }
     .muted{ color: var(--muted); }
-
     .btns{ display:flex; flex-wrap:wrap; gap:.6rem; margin:.8rem 0 0; }
     .btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.52rem .9rem; border-radius: 9px; text-decoration:none; font-weight:600; letter-spacing:.02em; border:1px solid currentColor; transition: transform .02s, background .2s, color .2s, border-color .2s; }
     .btn:active{ transform: translateY(1px); }
     .btn-primary{ color:#fff; background: var(--theme-color); border-color: transparent; }
-    .btn-primary:hover{ filter: brightness(1.02) saturate(1.02); }
-    .btn-ghost{ color: var(--theme-color); background: transparent; border-color: color-mix(in srgb, var(--theme-color) 48%, currentColor); }
-    .btn-ghost:hover{ background: color-mix(in srgb, var(--theme-color) 8%, #fff); }
-    :root.dark .btn-ghost:hover{ background: color-mix(in srgb, var(--theme-color) 16%, #0f1216); }
 
-    /* Chips (Highlights) */
-    .highlights{ display:flex; flex-wrap:wrap; gap:.45rem .6rem; padding:0; margin: .3rem 0 0; list-style:none; }
-    .highlights li{ background: var(--theme-color-subtle); border-radius:9999px; padding:.16rem .65rem; font-size:.92rem; font-weight:600; letter-spacing:.02em; color: var(--theme-color); }
-    .highlights li::before{ content:"• "; }
+    /* Media & Figures (large) */
+    .video-wrap{ display:grid; place-items:center; margin:1rem 0 0; }
+    video{ width:min(1000px, 95vw); height:auto; border-radius: 12px; border:1px solid var(--border); box-shadow: var(--shadow); }
 
-    /* Media */
-    .media{ margin: 1.2rem 0 0; }
-    .video-wrap{ display:grid; place-items:center; margin:.8rem 0 0; }
-    video, .media img{ width:min(980px, 92vw); height:auto; border-radius: 10px; border:1px solid var(--border); box-shadow: var(--shadow); }
+    .fig{ background: var(--surface); border:1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: .8rem; margin: 1.2rem 0; }
+    .fig img{ width:min(1000px, 95vw); height:auto; display:block; margin:0 auto; border-radius:10px; }
+    .fig .cap{ font-size:.95rem; color:var(--muted); margin:.5rem auto 0; max-width: min(980px, 92vw); }
 
-    /* Two-column detail */
-    .grid-2{ display:grid; grid-template-columns: 1fr 1fr; gap:1.1rem; }
-    @media (max-width: 900px){ .grid-2{ grid-template-columns: 1fr; } }
-
-    /* Figure gallery */
-    .gallery{ display:grid; grid-template-columns: 1fr; gap: 1rem; }
-    .fig{ background: var(--surface); border:1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: .8rem; }
-    .fig img{ width:100%; height:auto; border-radius:8px; }
-    .fig .cap{ font-size:.95rem; color:var(--muted); margin:.4rem 0 0; }
+    .gallery{ display:grid; gap: 1rem; }
 
     /* Footer note */
-    .foot{ display:flex; justify-content:space-between; align-items:center; gap:.8rem; padding:1.2rem 0 2rem; border-top:1px dashed var(--border); margin-top:2rem; color:var(--muted); }
-
-    /* Small helper */
-    .inline-icon{ height: 1em; width:auto; vertical-align: -.15em; margin-right:.25em; border-radius:2px; }
+    .foot{ display:flex; justify-content:flex-start; align-items:center; gap:.8rem; padding:1.2rem 0 2rem; border-top:1px dashed var(--border); margin-top:2rem; color:var(--muted); }
 
   </style>
 </head>
 <body>
   <a id="top"></a>
 
-  <!-- ======= Fixed site header (glassy) ======= -->
+  <!-- ======= Fixed minimal header (no nav) ======= -->
   <header id="site-header">
     <div class="wrap container">
       <a class="brand" href="index.html" title="Back to Home">
         <span class="logo"><i class="fa-solid fa-cube"></i></span>
         <span>TAO&nbsp;Yuhao</span>
       </a>
-
-      <nav class="site-nav">
-        <ul>
-          <li><a href="#overview" class="active">Overview</a></li>
-          <li><a href="#rotation">Rotation&nbsp;Algorithm</a></li>
-          <li><a href="#figures">Figures</a></li>
-          <li><a href="#resources">Resources</a></li>
-        </ul>
-      </nav>
-
+      <div class="spacer"></div>
       <button id="theme-btn" class="theme-btn" type="button" aria-label="Theme: Light (click to change)" title="Theme: Light"><span id="theme-ico">☀︎</span></button>
     </div>
   </header>
-
-  <!-- ======= Hero / Masthead ======= -->
-  <section class="masthead">
-    <div class="inner">
-      <h1>Atomistic Simulation of Alloy</h1>
-      <p class="subtitle">CrCoNi MEA · Gradient Nano‑Grained (GNG) · Cryogenic Tensile Deformation</p>
-      <a href="#overview" class="scroll-down" aria-label="Scroll to overview">▼</a>
-    </div>
-  </section>
 
   <main class="container">
     <!-- ================= Overview ================= -->
     <section id="overview" class="section">
       <h2 class="section-title">Part I — Paper Overview</h2>
-      <div class="lead">
-        <div>
-          <p>
-            This work reports large‑scale molecular dynamics (MD) simulations of a CrCoNi medium‑entropy alloy (MEA) featuring a
-            <strong>gradient nano‑grained (GNG)</strong> architecture under <strong>cryogenic</strong> uniaxial tension (≈ 15% true strain).
-            We observe strong strain hardening through the elasto‑plastic transition; post‑yield, <em>strain partitioning</em> develops across grain‑size zones. Stacking‑fault activity—used as a proxy for dislocation processes—shows grain‑size dependence and supports
-            <strong>hetero‑deformation induced (HDI)</strong> hardening. The GNG structure exhibits superior flow stress compared to a rule‑of‑mixtures estimate from homogeneous nano‑grained counterparts.
-          </p>
 
-          <ul class="highlights">
-            <li>Large‑scale MD of GNG vs. homogeneous NG</li>
-            <li>Elasto‑plastic transition & strong hardening</li>
-            <li>Strain partitioning across grain‑size zones</li>
-            <li>Stacking‑fault activity as dislocation proxy</li>
-            <li>HDI hardening & superior flow stress</li>
-          </ul>
+      <p>
+        This work reports large‑scale molecular dynamics (MD) simulations of a CrCoNi medium‑entropy alloy (MEA) featuring a
+        <strong>gradient nano‑grained (GNG)</strong> architecture under <strong>cryogenic</strong> uniaxial tension (≈ 15% true strain).
+        We observe strong strain hardening through the elasto‑plastic transition; post‑yield, <em>strain partitioning</em> develops across grain‑size zones. Stacking‑fault activity—used as a proxy for dislocation processes—shows grain‑size dependence and supports
+        <strong>hetero‑deformation induced (HDI)</strong> hardening. The GNG structure exhibits superior flow stress compared to a rule‑of‑mixtures estimate from homogeneous nano‑grained counterparts.
+      </p>
 
-          <div class="btns">
-            <a class="btn btn-primary" href="data/fmats-09-1118952.pdf" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf"></i> Full Paper (PDF)</a>
-            <a class="btn btn-ghost" href="https://www.frontiersin.org/journals/materials/articles/10.3389/fmats.2022.1118952/full" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Journal Page</a>
-          </div>
-
-          <div class="media">
-            <h3>Structural Evolution During Tensile Deformation</h3>
-            <p class="muted">GNG‑structured model under tensile strain. FCC atoms hidden; blue = HCP atoms, red = others.</p>
-            <div class="video-wrap">
-              <video id="grainGrowthDemo" controls preload="metadata" poster="preview.png">
-                <source src="image/mdsim_tensile.mp4" type="video/mp4" />
-                Your browser does not support HTML5 video.
-              </video>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right column: Fast facts card -->
-        <aside class="card">
-          <h3 style="margin-bottom:.4rem">Fast Facts</h3>
-          <ul style="margin:.2rem 0 0 1.1rem; padding:0;">
-            <li>Alloy: CrCoNi (MEA)</li>
-            <li>Architecture: Gradient nano‑grained (GNG)</li>
-            <li>Loading: Uniaxial tension · cryogenic</li>
-            <li>Max strain ≈ 15% (true)</li>
-            <li>Key metrics: flow stress, stacking fault activity</li>
-          </ul>
-          <hr style="border:none; border-top:1px dashed var(--border); margin:.8rem 0;" />
-          <div>
-            <span class="muted">BibTeX</span>
-            <details style="margin-top:.4rem;">
-              <summary class="btn btn-ghost" style="display:inline-flex;">Show BibTeX</summary>
-              <pre style="white-space:pre-wrap; background:transparent; border:1px dashed var(--border); border-radius:8px; padding:.7rem; margin-top:.5rem; font-size:.9rem;">
-@article{tao2023MEA,
-  title   = {Atomistic tensile deformation mechanisms in a CrCoNi medium-entropy alloy with gradient nano-grained structure at cryogenic temperature},
-  author  = {Tao Y, Cheng W and Wang W},
-  journal = {Frontiers in Materials},
-  year    = {2023},
-  doi     = {10.3389/fmats.2022.1118952}
-}
-              </pre>
-            </details>
-          </div>
-        </aside>
+      <!-- Single occurrence of the paper PDF link -->
+      <div class="btns">
+        <a class="btn btn-primary" href="data/fmats-09-1118952.pdf" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf"></i> Full Paper (PDF)</a>
       </div>
+
+      <div class="video-wrap">
+        <video id="grainGrowthDemo" controls preload="metadata" poster="preview.png">
+          <source src="image/mdsim_tensile.mp4" type="video/mp4" />
+          Your browser does not support HTML5 video.
+        </video>
+      </div>
+
+      <ul class="gallery" style="margin-top:1rem; list-style:none; padding:0;">
+        <li class="fig">
+          <div class="cap">GNG‑structured model under tensile strain. FCC atoms hidden; blue = HCP atoms, red = others.</div>
+        </li>
+      </ul>
+
+      <ul class="highlights" style="display:flex;flex-wrap:wrap;gap:.45rem .6rem; padding:0; margin: .9rem 0 0; list-style:none;">
+        <li style="background: var(--theme-color-subtle); border-radius:9999px; padding:.16rem .65rem; font-size:.92rem; font-weight:600; letter-spacing:.02em; color: var(--theme-color);">Large‑scale MD of GNG vs. NG</li>
+        <li style="background: var(--theme-color-subtle); border-radius:9999px; padding:.16rem .65rem; font-size:.92rem; font-weight:600; letter-spacing:.02em; color: var(--theme-color);">Elasto‑plastic transition & hardening</li>
+        <li style="background: var(--theme-color-subtle); border-radius:9999px; padding:.16rem .65rem; font-size:.92rem; font-weight:600; letter-spacing:.02em; color: var(--theme-color);">Strain partitioning across zones</li>
+        <li style="background: var(--theme-color-subtle); border-radius:9999px; padding:.16rem .65rem; font-size:.92rem; font-weight:600; letter-spacing:.02em; color: var(--theme-color);">Stacking‑fault activity proxy</li>
+        <li style="background: var(--theme-color-subtle); border-radius:9999px; padding:.16rem .65rem; font-size:.92rem; font-weight:600; letter-spacing:.02em; color: var(--theme-color);">HDI hardening, superior flow stress</li>
+      </ul>
     </section>
 
     <!-- ================= Rotation Algorithm ================= -->
@@ -270,26 +182,21 @@
         The pipeline is designed for robustness in the presence of twinning, grain‑boundary motion, and bent grains.
       </p>
 
-      <div class="grid-2" style="margin-top:.8rem;">
-        <div class="card">
-          <h3>What the Pipeline Does</h3>
-          <ul style="margin:.4rem 0 0 1.1rem;">
-            <li><strong>Global defect mask</strong>: flag atoms that are non‑FCC at least once and exclude them from stats.</li>
-            <li><strong>Baseline orientation (0%)</strong>: normalize quaternion→angle (z‑axis) to avoid branch/symmetry jumps.</li>
-            <li><strong>Per‑frame rotation</strong>: convert rotation quaternions to z‑angles; wrap to <code>[-45°, 45°]</code> (⟨001⟩ 90° symmetry).</li>
-            <li><strong>Main‑peak selection</strong>: 5° grain‑wise histogram; pick adjacent dominant peak to suppress twins/noise.</li>
-            <li><strong>Relative rotation</strong>: compute each grain’s mean difference to neighbors; aggregate by grain‑size zone.</li>
-            <li><strong>OVITO verification</strong>: export only main‑peak atoms (<code>id, rot, x, y, z</code>) for color mapping.</li>
-          </ul>
-          <div class="btns" style="margin-top:.8rem;">
-            <a class="btn btn-ghost" href="https://github.com/Er1koenig/MD-sim/blob/main/Rotation_new.m" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Code (Matlab)</a>
-          </div>
-        </div>
-        <div class="card">
-          <h3>Rotation vs. Strain</h3>
-          <p class="muted" style="margin:.15rem 0 .6rem;">Absolute rotation angle vs. applied tensile strain on a GNG‑structured model.</p>
-          <img src="image/rot_evolution.png" alt="Absolute rotation angle vs. applied tensile strain" style="width:100%; height:auto; border-radius:10px; border:1px solid var(--border);" />
-        </div>
+      <div class="fig">
+        <img src="image/rot_evolution.png" alt="Absolute rotation angle vs. applied tensile strain" />
+        <div class="cap">Absolute rotation angle vs. applied tensile strain on a GNG‑structured model.</div>
+      </div>
+
+      <div class="fig" style="padding:1rem;">
+        <h3 style="margin:.2rem 0 .6rem;">What the Pipeline Does</h3>
+        <ul style="margin:.2rem 0 0 1.1rem;">
+          <li><strong>Global defect mask</strong>: flag atoms that are non‑FCC at least once and exclude them from stats.</li>
+          <li><strong>Baseline orientation (0%)</strong>: normalize quaternion→angle (z‑axis) to avoid branch/symmetry jumps.</li>
+          <li><strong>Per‑frame rotation</strong>: convert rotation quaternions to z‑angles; wrap to <code>[-45°, 45°]</code> (⟨001⟩ 90° symmetry).</li>
+          <li><strong>Main‑peak selection</strong>: 5° grain‑wise histogram; pick adjacent dominant peak to suppress twins/noise.</li>
+          <li><strong>Relative rotation</strong>: compute each grain’s mean difference to neighbors; aggregate by grain‑size zone.</li>
+          <li><strong>OVITO verification</strong>: export only main‑peak atoms (<code>id, rot, x, y, z</code>) for color mapping.</li>
+        </ul>
       </div>
     </section>
 
@@ -312,44 +219,16 @@
           <figcaption class="cap">Bent grains and their broadened rotation spread are handled through the peak‑selection logic.</figcaption>
         </figure>
       </div>
-    </section>
 
-    <!-- ================= Resources / Links ================= -->
-    <section id="resources" class="section">
-      <h2 class="section-title">Resources</h2>
-      <div class="card">
-        <div class="btns">
-          <a class="btn btn-primary" href="data/fmats-09-1118952.pdf" target="_blank" rel="noopener"><i class="fa-solid fa-file-pdf"></i> Full Paper (PDF)</a>
-          <a class="btn btn-ghost" href="https://www.frontiersin.org/journals/materials/articles/10.3389/fmats.2022.1118952/full" target="_blank" rel="noopener"><i class="fa-solid fa-up-right-from-square"></i> Journal Page</a>
-          <a class="btn btn-ghost" href="https://er1koenig.github.io/MD-sim/" target="_blank" rel="noopener"><i class="fa-solid fa-globe"></i> Project Page</a>
-          <a class="btn btn-ghost" href="https://github.com/Er1koenig/MD-sim/blob/main/Rotation_new.m" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Code (Matlab)</a>
-        </div>
-        <p class="muted" style="margin-top:.8rem;">For datasets and additional figures, please contact the authors.</p>
-      </div>
-
-      <div class="foot">
-        <div>© TAO Yuhao · Atomistic Simulation of Alloy</div>
-        <div><a href="#top">Back to top ↑</a></div>
-      </div>
+      <div class="foot">© TAO Yuhao · Atomistic Simulation of Alloy</div>
     </section>
   </main>
 
-  <!-- ======= Interaction scripts: elevation, scroll‑spy, theme switch ======= -->
+  <!-- ======= Scripts: elevation + theme switch (no scroll‑spy, no nav) ======= -->
   <script>
     // Elevation on scroll
     const onScrollShadow = () => document.body.classList.toggle('scrolled', window.scrollY > 4);
     window.addEventListener('scroll', onScrollShadow); onScrollShadow();
-
-    // Simple Scroll‑Spy (nav active state)
-    const navLinks = [...document.querySelectorAll('nav.site-nav a')];
-    const anchors = [...document.querySelectorAll('main section[id]')].sort((a,b)=>a.offsetTop-b.offsetTop);
-    function onScrollSpy(){
-      const pos = window.scrollY + 120;
-      let cur = anchors[0];
-      for(const s of anchors){ if(pos >= s.offsetTop) cur = s; else break; }
-      navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href').slice(1) === '#' + cur.id));
-    }
-    window.addEventListener('scroll', onScrollSpy); onScrollSpy();
 
     // === Single Button Theme Switcher (☀︎ → ☾ → ◐) ===
     (function(){
