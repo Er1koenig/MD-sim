@@ -1,298 +1,120 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Atomistic Simulation of Alloy</title>
-<meta name="description" content="MD of gradient nano-grained alloy under tension and a robust grain-rotation analysis pipeline (OVITO + LAMMPS)." />
 
+<!-- ========== Minimal page styling (unified with your other project page) ========== -->
 <style>
-  /* ===== Design tokens ===== */
-  :root{
-    --bg: #0b0c10;
-    --panel:#111218;
-    --text:#e8ecf1;
-    --muted:#a7b0ba;
-    --ink:#0b2f5b;
-    --line:#1f2937;
-    --brand:#6ee7b7; /* mint */
-    --brand-2:#93c5fd; /* sky */
-    --accent:#eab308;
-    --code-bg:#0f131a;
-    --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 10px rgba(0,0,0,.25);
+  body{font-family:system-ui,sans-serif;line-height:1.6;margin:0;padding:0 1.5rem;}
+  h1{color:#0b2f5b;margin-top:2rem;}
+  h2{margin-top:1.2rem;margin-left:3rem;}
+  ul{margin-left:1.6rem;}
+  code{background:#f5f5f5;padding:0.1rem 0.3rem;border-radius:4px;}
+  .img{margin:2rem 0;text-align:center;}
+  .img img{
+    width:90%;           /* consistent width on large screens */
+    max-width:850px;     /* avoid oversized images */
+    height:auto;
+    border:1px transparent #ccc;
+    border-radius:8px;
   }
-  @media (prefers-color-scheme: light) {
-    :root{
-      --bg:#f8fafc;
-      --panel:#ffffff;
-      --text:#0f172a;
-      --muted:#475569;
-      --ink:#0b2f5b;
-      --line:#e5e7eb;
-      --code-bg:#f4f6f8;
-      --shadow: 0 8px 24px rgba(2,6,23,.08), 0 1px 10px rgba(2,6,23,.05);
-    }
+  .video-wrapper { margin: 1rem 0; text-align: center; }
+  video { width: 700px; height: auto; border: 1px solid #ccc; border-radius: 8px; }
+  /* subtle outlined link‑button for the PDF */
+  .download-link{
+    display:inline-block;
+    margin-left:.6rem;
+    padding:.4rem 1rem;
+    font-size:.95rem;
+    color:#1a3353;
+    border:1px solid currentColor;
+    border-radius:4px;
+    text-decoration:none;
+    transition:.2s;
   }
-  [data-theme="light"]{
-    --bg:#f8fafc; --panel:#ffffff; --text:#0f172a; --muted:#475569; --ink:#0b2f5b; --line:#e5e7eb; --code-bg:#f4f6f8;
-    --shadow: 0 8px 24px rgba(2,6,23,.08), 0 1px 10px rgba(2,6,23,.05);
-  }
-  [data-theme="dark"]{
-    --bg:#0b0c10; --panel:#111218; --text:#e8ecf1; --muted:#a7b0ba; --ink:#6fb1ff; --line:#1f2937; --code-bg:#0f131a;
-    --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 10px rgba(0,0,0,.25);
-  }
-
-  /* ===== Base ===== */
-  html,body{height:100%}
-  body{
-    margin:0; background:var(--bg); color:var(--text);
-    font: 16px/1.7 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft Yahei", sans-serif;
-    text-rendering:optimizeLegibility; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-  }
-  .container{max-width:1100px; margin:0 auto; padding:28px 20px 80px}
-  h1{font-size: clamp(26px, 3.3vw, 40px); line-height:1.15; color:var(--ink); margin:0 0 8px}
-  h2{font-size: clamp(20px, 2.4vw, 26px); margin:2rem 0 .8rem; color:var(--text)}
-  h3{font-size: clamp(17px, 2vw, 20px); margin:1.2rem 0 .4rem}
-  p, li{color:var(--text)}
-  .muted{color:var(--muted)}
-  a{color:var(--brand-2); text-decoration:none}
-  a:hover{text-decoration:underline}
-  code{background:var(--code-bg); padding:.15rem .35rem; border-radius:6px}
-
-  /* ===== Header / Nav ===== */
-  .site-header{
-    position:sticky; top:0; z-index:50; backdrop-filter:saturate(160%) blur(8px);
-    background: color-mix(in oklab, var(--bg) 88%, transparent);
-    border-bottom:1px solid var(--line);
-  }
-  .nav{
-    max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between;
-    padding:12px 20px;
-  }
-  .brand{display:flex; align-items:center; gap:.75rem}
-  .logo{
-    width:28px; height:28px; border-radius:8px; display:grid; place-items:center;
-    background: linear-gradient(135deg, var(--brand), var(--brand-2));
-    box-shadow: var(--shadow);
-  }
-  .logo svg{filter:drop-shadow(0 2px 4px rgba(0,0,0,.25))}
-  .links{display:flex; gap:14px; align-items:center}
-  .btn{
-    display:inline-flex; align-items:center; gap:.5rem;
-    padding:.5rem .9rem; border-radius:10px; border:1px solid var(--line);
-    background:linear-gradient(180deg, color-mix(in oklab, var(--panel) 96%, transparent), color-mix(in oklab, var(--panel) 92%, transparent));
-    color:var(--text); text-decoration:none; transition:.2s box-shadow, .2s transform, .2s background;
-  }
-  .btn:hover{box-shadow:var(--shadow); transform:translateY(-1px)}
-  .btn.primary{border-color:transparent; background:linear-gradient(135deg, var(--brand), var(--brand-2)); color:#0b1020}
-  .theme-toggle{cursor:pointer; border:1px solid var(--line); border-radius:10px; padding:.45rem .7rem; background:var(--panel)}
-
-  /* ===== Cards / Sections ===== */
-  .section{padding-top:14px}
-  .card{
-    background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:18px 18px;
-    box-shadow: var(--shadow);
-  }
-  .grid{display:grid; gap:16px}
-  @media(min-width:900px){ .grid-2{ grid-template-columns: 1.4fr 1fr } }
-
-  /* ===== Media / Gallery ===== */
-  .video-wrap{
-    aspect-ratio:16/9; background:var(--code-bg); border:1px solid var(--line); border-radius:14px;
-    overflow:hidden; box-shadow:var(--shadow);
-  }
-  .video-wrap video{ width:100%; height:100%; display:block }
-  figure{margin:0}
-  .gallery{display:grid; gap:14px}
-  @media(min-width:700px){ .gallery.cols-2{grid-template-columns:1fr 1fr} .gallery.cols-3{grid-template-columns:repeat(3,1fr)} }
-  .figure{
-    background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden;
-    box-shadow: var(--shadow);
-  }
-  .figure img{width:100%; height:auto; display:block}
-  .figcap{font-size:.92rem; padding:.6rem .9rem; color:var(--muted); border-top:1px solid var(--line)}
-  .bullets{margin:.6rem 0 0 1.1rem}
-
-  /* ===== Subtle animation ===== */
-  .reveal{opacity:0; transform:translateY(8px); transition:.6s ease}
-  .reveal.in{opacity:1; transform:none}
-  @media (prefers-reduced-motion: reduce) {
-    .reveal{opacity:1; transform:none}
-  }
-
-  /* ===== Footer ===== */
-  footer{margin:42px 0 10px; color:var(--muted); text-align:center; font-size:.9rem}
+  .download-link:hover{ background:#1a3353; color:#fff; }
+  /* spacing around block equations (kept for consistency) */
+  .math-block{margin:1rem 0;}
+  /* small helper classes */
+  .muted{color:#4a5568}
+  .note{font-size:.95rem;color:#4a5568;margin:.5rem 0 0}
 </style>
+
+<!-- ========== (Optional) MathJax for LaTeX rendering, kept consistent ========== -->
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
-
 <body>
-  <!-- ===== Sticky Header (no hero section) ===== -->
-  <header class="site-header">
-    <div class="nav">
-      <div class="brand">
-        <div class="logo" aria-hidden="true">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M4 12a8 8 0 1 1 16 0" stroke="#0b1020" stroke-width="2"/>
-            <circle cx="12" cy="12" r="3" fill="#0b1020"/>
-          </svg>
-        </div>
-        <strong>Atomistic Simulation of Alloy</strong>
-      </div>
-      <div class="links">
-        <a href="#paper-overview" class="btn">Paper</a>
-        <a href="#grain-rotation" class="btn">Grain Rotation</a>
-        <a href="data/fmats-09-1118952.pdf" target="_blank" class="btn primary" rel="noopener">Full Paper PDF ↗</a>
-        <button id="themeToggle" class="theme-toggle" title="Toggle theme">🌗</button>
-      </div>
-    </div>
-  </header>
 
-  <main class="container">
+<!-- ===================== PART I: PAPER (Overview) ===================== -->
+<section id="paper-overview">
+  <h1>Part I — Paper Overview</h1>
+  <p>
+    This paper summarizes our MD study on tensile deformation of a CrCoNi MEA with a
+    gradient nano‑grained (GNG) structure at cryogenic temperature.
+    <a class="download-link" href="data/fmats-09-1118952.pdf" target="_blank">Full Paper PDF ↗</a>
+  </p>
+  <ul>
+    <li>Large‑scale MD of GNG vs. homogeneous nano‑grained (NG) counterparts; uniaxial tension to ~15% true strain.</li>
+    <li>Strong strain hardening during the elasto‑plastic transition; after yielding, <em>strain partitioning</em> across grain‑size zones emerges.</li>
+    <li>Stacking‑fault activity (as a proxy for dislocation processes) exhibits grain‑size dependence and supports hetero-deformation induced (HDI) hardening.</li>
+    <li>GNG structure shows superior flow stress compared with the mixture rule estimate from homogeneous NG cases.</li>
+  </ul>
 
-    <!-- ===================== PART I: PAPER (Overview) ===================== -->
-    <section id="paper-overview" class="section reveal">
-      <h1>Atomistic Simulation of Alloy</h1>
-      <p class="muted" style="margin:.2rem 0 1rem">Large-scale MD of a gradient nano-grained (GNG) CrCoNi alloy under uniaxial tension at cryogenic temperature, and a robust OVITO-based pipeline to quantify grain rotation.</p>
+  <h2>Structural Evolution During Tensile Deformation</h2>
+  <p style="margin-left:1.2rem;margin-left:3rem;">Strcuture evolution of a GNG-structured model under tensile strain, FCC atoms not shown, blue for HCP atoms and red for other atoms.</p>
+  <div class="video-wrapper">
+      <video id="grainGrowthDemo" controls preload="metadata" poster="preview.png">
+          <source src="image/mdsim_tensile.mp4" type="video/mp4" />
+          Your browser does not support HTML5 video.
+      </video>
+  </div>
+</section>
 
-      <div class="grid grid-2">
-        <div class="card">
-          <h2>Part I — Paper Overview</h2>
-          <p>We compare GNG and homogeneous nano-grained (NG) models under ~15% true strain and highlight mechanisms behind the superior flow stress of GNG.</p>
-          <ul class="bullets">
-            <li>Pronounced strain hardening across the elasto-plastic transition; post-yield <em>strain partitioning</em> among size zones.</li>
-            <li>Stacking-fault activity (proxy for dislocation processes) scales with grain size → supports HDI hardening.</li>
-            <li>GNG outperforms the mixture-rule estimate constructed from homogeneous NG cases.</li>
-          </ul>
-          <p class="muted" style="margin:.6rem 0 0">PDF: <a href="data/fmats-09-1118952.pdf" target="_blank" rel="noopener">Frontiers in Materials (open access)</a></p>
-        </div>
+<!-- ===================== PART II: GRAIN ROTATION ALGORITHM ===================== -->
+<section id="grain-rotation">
+  <h1>Part II — Grain Rotation Analysis Algorithm</h1>
+  <p>
+    A lean pipeline converts OVITO-exported quaternions and LAMMPS dumps into
+    <strong>per-grain rotation metrics</strong> plus an <strong>OVITO-verifiable point cloud</strong>,
+    optimized for robustness and fast visual validation.
+  </p>
 
-        <div class="card">
-          <h3>Structural Evolution During Tension</h3>
-          <p class="muted">FCC atoms hidden. Blue = HCP; Red = others.</p>
-          <div class="video-wrap">
-            <video controls preload="metadata" poster="image/preview.png">
-              <source src="image/mdsim_tensile.mp4" type="video/mp4" />
-              Your browser does not support HTML5 video.
-            </video>
-          </div>
-        </div>
-      </div>
+  <h2>What the Pipeline Does</h2>
+  <ul>
+    <li><strong>Global defect mask</strong>: scan all frames and flag atoms that are non-FCC at least once; exclude flagged atoms from all statistics.</li>
+    <li><strong>Baseline orientation (0%)</strong>: normalize the quaternion→angle convention (z-axis) to eliminate branch/symmetry jumps.</li>
+    <li><strong>Per-frame rotation</strong>: convert rotation quaternions to z-angles and wrap to <code>[-45°, 45°]</code> to fold ⟨001⟩ 90° symmetry.</li>
+    <li><strong>Main-peak selection</strong>: 5° grain-wise histogram; select the adjacent dominant peak to suppress twins/noise.</li>
+    <li><strong>Relative rotation</strong>: compute each grain’s mean difference to its neighbors; aggregate absolute values by grain-size zone.</li>
+    <li><strong>OVITO verification</strong>: export only main-peak atoms (<code>id, rot, x, y, z</code>) for direct color mapping.</li>
+  </ul>
 
-      <!-- Two figure placeholders (replace src with your images) -->
-      <div class="gallery cols-2" style="margin-top:16px">
-        <figure class="figure">
-          <img src="image/structure_evolution_1.png" alt="Atomistic snapshots at multiple strain levels (e.g., 2%, 4%, 7%, 10%)" />
-          <figcaption class="figcap">Structural evolution snapshots across tensile strain.</figcaption>
-        </figure>
-        <figure class="figure">
-          <img src="image/structure_evolution_2.png" alt="Strain partitioning map across gradient size zones" />
-          <figcaption class="figcap">Strain partitioning across gradient grain-size zones.</figcaption>
-        </figure>
-      </div>
-    </section>
+  <!-- ====== Figure Group 1: rotation vs. strain ====== -->
+  <h2>Rotation vs. Strain</h2>
+  <p style="margin-left:1.2rem;margin-left:3rem;">Absolute rotation angle vs. applied tensile strain on a GNG-structured model.</p>
+  <div class="img">
+    <img src="image/rot_evolution.png" alt="Absolute rotation angle vs. applied tensile strain (from left to right: 2%, 4%, 5%, 7% and 10%)">
+  </div>
 
-    <!-- ===================== PART II: GRAIN ROTATION ALGORITHM ===================== -->
-    <section id="grain-rotation" class="section reveal">
-      <div class="card">
-        <h2>Part II — Grain Rotation Analysis (Brief)</h2>
-        <p>A lean pipeline converts OVITO-exported quaternions and LAMMPS dumps into <strong>per-grain rotation metrics</strong> and an <strong>OVITO-verifiable point cloud</strong>, optimized for robustness and fast visual validation.</p>
-        <div class="grid" style="--cols:3; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
-          <div class="card" style="padding:14px">
-            <h3>1) Global Defect Mask</h3>
-            <p class="muted">Scan all frames; atoms ever non-FCC are excluded from stats.</p>
-          </div>
-          <div class="card" style="padding:14px">
-            <h3>2) 0% Baseline</h3>
-            <p class="muted">Normalize quaternion→z-angle convention to remove branch/symmetry jumps.</p>
-          </div>
-          <div class="card" style="padding:14px">
-            <h3>3) Per-Frame Rotation</h3>
-            <p class="muted">Convert to z-angle; wrap to <code>[-45°, 45°]</code> for ⟨001⟩ 90° symmetry.</p>
-          </div>
-          <div class="card" style="padding:14px">
-            <h3>4) Main-Peak Selection</h3>
-            <p class="muted">5° grain-wise histogram; pick adjacent dominant peak to suppress twins/noise.</p>
-          </div>
-          <div class="card" style="padding:14px">
-            <h3>5) Relative Rotation</h3>
-            <p class="muted">Mean difference vs. neighbors; aggregate absolute values by size zone.</p>
-          </div>
-          <div class="card" style="padding:14px">
-            <h3>6) OVITO Check</h3>
-            <p class="muted">Export main-peak atoms (<code>id, rot, x, y, z</code>) for color mapping.</p>
-          </div>
-        </div>
-      </div>
+  <!-- ====== Figure Group 2: algorithm identification results ====== -->
+  <h2>Robustness in Twins, GB Motion, and Bent Grains Scenarios</h2>
+  <p style="margin-left:1.2rem;margin-left:3rem;">Twinning regions are identified and trimmed via main-peak range.</p>
+  <div class="img">
+    <img src="image/twinning.png" alt="Twinning regions identified/trimmed by main‑peak range">
+  </div>
 
-      <!-- Figure group 1: rotation vs strain -->
-      <div class="gallery cols-2" style="margin-top:16px">
-        <figure class="figure">
-          <img src="image/rotation_vs_strain_abs.png" alt="Mean absolute grain rotation vs tensile strain, grouped by grain-size zones" />
-          <figcaption class="figcap">Mean |absolute rotation| vs. strain by size zone.</figcaption>
-        </figure>
-        <figure class="figure">
-          <img src="image/rotation_vs_strain_relative.png" alt="Mean relative grain rotation (to neighbors) vs tensile strain, grouped by grain-size zones" />
-          <figcaption class="figcap">Mean |relative rotation| vs. strain by size zone.</figcaption>
-        </figure>
-      </div>
+  <p style="margin-left:1.2rem;margin-left:3rem;">FCC atoms of another grain are excluded.</p>
+  <div class="img">
+    <img src="image/gb_motion.png" alt="Grain boundary motion impact on rotation distribution">
+  </div>
 
-      <!-- Figure group 2: identification results -->
-      <h3 style="margin-top:18px">Detecting Twins, GB Motion, and Bent Grains</h3>
-      <div class="gallery cols-3">
-        <figure class="figure">
-          <img src="image/twinning.png" alt="Twinning regions identified and trimmed via main-peak range" />
-          <figcaption class="figcap">Twins trimmed by main-peak range.</figcaption>
-        </figure>
-        <figure class="figure">
-          <img src="image/gb_motion.png" alt="Impact of grain-boundary motion on rotation distribution and its handling" />
-          <figcaption class="figcap">Handling rotation shifts from GB motion.</figcaption>
-        </figure>
-        <figure class="figure">
-          <img src="image/bending.png" alt="Bent grains and their broadened rotation spread handled by peak-selection logic" />
-          <figcaption class="figcap">Bent grains: broadened spread controlled by peak logic.</figcaption>
-        </figure>
-      </div>
+  <p style="margin-left:1.2rem;margin-left:3rem;">Bent grains and their broadened rotation spread are handled by the peak-selection logic.</p>
+  <div class="img">
+    <img src="image/bending.png" alt="Bent grains and their rotation spread handled by the peak‑selection logic">
+  </div>
 
-      <p class="muted" style="margin-top:10px">Tip: keep <code>ROTVerifier_*.dat</code> aligned with dump IDs so OVITO can color by <code>rot</code> without reindexing.</p>
-    </section>
+</section>
 
-    <footer class="reveal">
-      <p>© <span id="y"></span> — Atomistic Simulation of Alloy · Built with plain HTML/CSS/JS.</p>
-    </footer>
-  </main>
-
-<script>
-  // Year
-  document.getElementById('y').textContent = new Date().getFullYear();
-
-  // Theme toggle: auto (system), light, dark
-  const root = document.documentElement;
-  const btn  = document.getElementById('themeToggle');
-  const saved = localStorage.getItem('theme-mode') || 'auto';
-  applyTheme(saved);
-
-  btn.addEventListener('click', () => {
-    const cur = root.getAttribute('data-theme') || 'auto';
-    const next = cur === 'auto' ? 'dark' : (cur === 'dark' ? 'light' : 'auto');
-    applyTheme(next);
-    localStorage.setItem('theme-mode', next);
-    btn.textContent = (next === 'auto' ? '🌗' : (next === 'dark' ? '🌙' : '🌞'));
-    btn.title = `Theme: ${next}`;
-  });
-
-  function applyTheme(mode){
-    root.setAttribute('data-theme', mode);
-    btn.textContent = (mode === 'auto' ? '🌗' : (mode === 'dark' ? '🌙' : '🌞'));
-    btn.title = `Theme: ${mode}`;
-  }
-
-  // Reveal on scroll
-  const io = new IntersectionObserver((entries)=>{
-    for(const e of entries){
-      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
-    }
-  }, {threshold:.08});
-  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
-</script>
 </body>
 </html>
