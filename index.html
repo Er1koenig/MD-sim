@@ -1,252 +1,117 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>From OVITO Quaternions to Grain Rotation: Robust Statistics & Visualization (Methods + Results, One Page)</title>
-  <style>
-    :root{
-      --bg: #0b0c10;
-      --panel: #111218;
-      --text: #e8ecf1;
-      --muted: #a7b0ba;
-      --accent: #6ee7b7;
-      --accent-2: #93c5fd;
-      --code-bg: #0f131a;
-      --code-bd: #1f2833;
-      --kbd-bg: #1b2330;
-    }
-    html,body{height:100%}
-    body{
-      margin:0; background:var(--bg); color:var(--text);
-      font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Noto Sans", sans-serif;
-    }
-    .container{max-width:1000px; margin:0 auto; padding:32px 20px 80px}
-    header{margin-bottom:28px}
-    .title{font-size: clamp(26px, 4vw, 40px); line-height:1.15; margin:0 0 8px}
-    .subtitle{margin:0; color:var(--muted)}
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid #1f2937; border-radius:16px; padding:20px}
-    h2{font-size: clamp(20px, 3vw, 28px); margin:28px 0 12px}
-    h3{font-size: clamp(18px, 2.4vw, 22px); margin:20px 0 10px}
-    p, li{color:var(--text)}
-    ul, ol{padding-left:20px}
-    .grid{display:grid; gap:16px}
-    @media(min-width:900px){.grid-2{grid-template-columns:1.2fr 1fr}}
-    .tag{display:inline-block; padding:2px 8px; border-radius:999px; background:#0f172a; border:1px solid #1f2937; color:var(--muted); font-size:12px; margin-right:8px}
-    .muted{color:var(--muted)}
-    .accent{color:var(--accent)}
-    .accent2{color:var(--accent-2)}
-    code, pre{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
-    pre{background:var(--code-bg); border:1px solid var(--code-bd); border-radius:14px; padding:16px; overflow:auto}
-    pre code{font-size:14px}
-    .kbd{font-family:inherit; background:var(--kbd-bg); border:1px solid #2a3748; padding:0 6px; border-radius:6px}
-    .pill{border:1px dashed #2a3748; padding:8px 10px; border-radius:10px; color:var(--muted)}
-    .hr{height:1px; background:#1f2833; border:0; margin:26px 0}
-    a{color:var(--accent-2); text-decoration:none}
-    a:hover{text-decoration:underline}
-    .small{font-size:13px}
-    .toc{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
-    .toc a{display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid #1f2937; background:#0f172a}
-    footer{margin-top:40px; color:var(--muted)}
-  </style>
+<meta charset="utf-8" />
+<title>Grain Rotation Analysis & Paper Overview</title>
+
+<!-- ========== Minimal page styling (unified with your other project page) ========== -->
+<style>
+  body{font-family:system-ui,sans-serif;line-height:1.6;margin:0;padding:0 1.5rem;}
+  h1,h2{color:#0b2f5b;margin-top:2rem;}
+  ul{margin-left:1rem;}
+  code{background:#f5f5f5;padding:0.1rem 0.3rem;border-radius:4px;}
+  .img{margin:2rem 0;text-align:center;}
+  .img img{
+    width:90%;           /* consistent width on large screens */
+    max-width:800px;     /* avoid oversized images */
+    height:auto;
+    border:1px transparent #ccc;
+    border-radius:8px;
+  }
+  /* subtle outlined link‑button for the PDF */
+  .download-link{
+    display:inline-block;
+    margin-left:.6rem;
+    padding:.4rem 1rem;
+    font-size:.95rem;
+    color:#1a3353;
+    border:1px solid currentColor;
+    border-radius:4px;
+    text-decoration:none;
+    transition:.2s;
+  }
+  .download-link:hover{ background:#1a3353; color:#fff; }
+  /* spacing around block equations (kept for consistency) */
+  .math-block{margin:1rem 0;}
+  /* small helper classes */
+  .muted{color:#4a5568}
+  .note{font-size:.95rem;color:#4a5568;margin:.5rem 0 0}
+</style>
+
+<!-- ========== (Optional) MathJax for LaTeX rendering, kept consistent ========== -->
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="tag">MD · OVITO · Quaternion · Grain Rotation</div>
-      <h1 class="title">From OVITO Quaternions to Grain Rotation: <span class="accent">Robust Statistics</span> & <span class="accent2">Visualization</span> (Methods + Results, One Page)</h1>
-      <p class="subtitle">Turn OVITO quaternions and dump files into <strong>reliable grain-rotation metrics</strong> and <strong>verifiable visualization</strong>. Tailored for gradient grain-size structures.</p>
-      <nav class="toc">
-        <a href="#overview">Overview</a>
-        <a href="#workflow">Workflow</a>
-        <a href="#method">Methods</a>
-        <a href="#pseudo">Pseudocode</a>
-        <a href="#results">How to Read Results</a>
-        <a href="#repro">Artifacts & Repro</a>
-        <a href="#tips">Notes</a>
-        <a href="#ext">Extensions</a>
-      </nav>
-    </header>
 
-    <main>
-      <section id="overview" class="card">
-        <h2>Overview (Why & What)</h2>
-        <div class="grid grid-2">
-          <div>
-            <p><strong>Problem</strong>: Quaternion → angle has multi-branch issues and crystal symmetry; twins/defects pollute statistics.</p>
-            <p><strong>Goal</strong>: Robustly obtain <strong>per-grain absolute rotation</strong> and <strong>relative rotation</strong> along tensile frames, and generate a point cloud that can be <strong>verified in OVITO</strong>.</p>
-            <p class="muted small">Inputs: <span class="kbd">dump*.dat</span>, <span class="kbd">ort000.dat</span>, <span class="kbd">r*.dat</span>, <span class="kbd">output_mod.dat</span>, <span class="kbd">Neighborlist.mat</span></p>
-          </div>
-          <div>
-            <ul>
-              <li><strong>noneFCC.dat</strong>: global defect mask (atoms that were non-FCC at any time)</li>
-              <li><strong>INFO_new.mat</strong>: per-frame/per-grain distributions, main peak, valid atoms</li>
-              <li><strong>ROT</strong> / <strong>ROT_REL</strong>: absolute/relative rotation intensity aggregated by size bin</li>
-              <li><strong>ROTVerifier_*.dat</strong>: <em>id, rot, x, y, z</em>, for direct color mapping in OVITO</li>
-            </ul>
-          </div>
-        </div>
-      </section>
+<!-- ===================== PART I: PAPER (Overview) ===================== -->
+<section id="paper-overview">
+  <h1>Part I — Paper Overview</h1>
+  <p>
+    This section summarizes our MD study on tensile deformation of a CrCoNi MEA with a
+    gradient nano‑grained (GNG) structure at cryogenic temperature.
+    <a class="download-link" href="fmats-09-1118952.pdf" target="_blank">Full Paper PDF ↗</a>
+  </p>
+  <ul>
+    <li>Large‑scale MD of GNG vs. homogeneous nano‑grained (NG) counterparts; uniaxial tension to ~15% true strain.</li>
+    <li>Strong strain hardening during the elasto‑plastic transition; after yielding, <em>strain partitioning</em> across grain‑size zones emerges.</li>
+    <li>Stacking‑fault activity (as a proxy for dislocation processes) exhibits grain‑size dependence and supports HDI hardening.</li>
+    <li>GNG structure shows superior flow stress compared with the mixture rule estimate from homogeneous NG cases.</li>
+  </ul>
 
-      <section id="workflow">
-        <h2>Workflow (Diagram)</h2>
-        <pre><code>         +-------------------+           +-------------------+
- dump &  |   searchNoneFCC   |          |     ORTDIFF       |
- quat ──▶| Global defect mask|          | 0% baseline (z)   |
-         +---------+---------+          +---------+---------+
-                   |                            |
-                   | noneFCC.dat                | ort_init(grain)
-                   v                            v
-         +-------------------+           (unified angle convention)
-         |   Rotation_new    |
-         | per-frame: fold   |
-         | binning & mainpeak|
-         | trim twins → grain|
-         | rotation + relative|
-         +---------+---------+
-                   |
-                   | INFO_new.mat, ROT/ROT_REL
-                   v
-         +-------------------+
-         |  Visualizer_new   |
-         | main-peak atoms → |
-         | point cloud       |
-         +---------+---------+
-                   |
-                   v
-              OVITO verification
-</code></pre>
-      </section>
-
-      <section id="method" class="card">
-        <h2>Methods (Key Ideas)</h2>
-        <ol>
-          <li>
-            <h3>Global defect mask (<code>searchNoneFCC.m</code>)</h3>
-            <p>Scan all strain frames: if an atom <strong>ever</strong> appears non-FCC (structure type ≠ 1), mark 1; otherwise 0. All subsequent stats use only atoms with mask=0 ("clean" atoms).</p>
-          </li>
-          <li>
-            <h3>Baseline orientation with unified convention (<code>ORTDIFF.m</code>)</h3>
-            <p>At 0% strain, convert orientation quaternions → Euler angles → a <strong>single z-rotation angle</strong>. Conditional branches and ±90° remapping remove cubic symmetry & Euler singularity jumps. Average over <strong>FCC atoms</strong> per grain to get <code>ort_init</code>.</p>
-          </li>
-          <li>
-            <h3>Per-frame grain rotation + twin trimming (<code>Rotation_new.m</code>)</h3>
-            <ul>
-              <li>Rotation quaternion → z-angle;</li>
-              <li><strong>Fold angle into [-45°, 45°]</strong> to account for &lt;001&gt; 90° symmetry;</li>
-              <li>Apply <code>noneFCC</code> mask to keep only clean atoms;</li>
-              <li><strong>Per-grain 5° binning</strong> over [-45°,45°]; pick the <strong>adjacent main peak</strong> and obtain its <strong>center</strong> & <strong>range</strong> [rot_min, rot_max];</li>
-              <li>Compute <strong>relative rotation</strong> using <code>Neighborlist</code>: <code>rel_rot(i) = mean(rot(i) - rot(neigh))</code>;</li>
-              <li>Aggregate by <strong>size bin</strong>: <code>ROT</code> (mean |absolute|) and <code>ROT_REL</code> (mean |relative|).</li>
-            </ul>
-          </li>
-          <li>
-            <h3>Close-the-loop visualization (<code>Visualizer_new.m</code>)</h3>
-            <p>For a selected frame, export atoms within the <strong>main-peak range</strong> as <code>id  rot  x  y  z</code>. Color by <code>rot</code> in OVITO to visually confirm contiguous, consistent rotation areas and twin removal.</p>
-          </li>
-        </ol>
-        <p class="pill">Design philosophy: minimal engineering (binning + adjacent main-peak + simple thresholds) for <strong>robustness</strong>, and every step is <strong>visually verifiable</strong>.</p>
-      </section>
-
-      <section id="pseudo">
-        <h2>Pseudocode (Condensed Pipeline)</h2>
-        <pre><code># Config & inputs
-frames = [ε1, ε2, ..., εN]
-load MAP  # (id → size_bin, grain_id)
-load Neighborlist
-
-# 1) Global defect mask
-defects = zeros(num_atoms)
-for f in frames:
-    dump = load_dump(f)
-    for each atom i:
-        if dump.structure[i] != FCC:
-            defects[i] = 1
-write defects → noneFCC.dat
-
-# 2) Baseline at 0%
-q0 = load_quat_orientation(f=0)
-ang0 = quat_to_euler_z(q0)        # branch fix + ±90° unification
-ort_init[grain] = mean_over_FCC_in_grain(ang0)
-
-# 3) Per-frame grain rotation
-for f in frames:
-  qrot = load_quat_rotation(f)
-  ang = quat_to_euler_z(qrot)
-  ang = fold_to_[-45,45](ang)     # 90° symmetry reduction
-  sel = (defects == 0)            # clean only
-
-  for each grain g:
-    data = ang[sel & (grain_id==g)]
-    hist = bin_5deg(data, -45, 45)
-    peak = pick_adjacent_main_peak(hist, thresholds=[0.60,0.55])
-    rot[g] = mean_in_peak(data, peak)
-    [rot_min[g], rot_max[g]] = bounds(peak)
-
-  for each grain g:
-    rel_rot[g] = mean( rot[g] - rot[neighbors_of(g)] )
-
-  # Aggregate by size bin (absolute values)
-  ROT[f, size_bin]     = mean_abs_over_grains(rot)
-  ROT_REL[f, size_bin] = mean_abs_over_grains(rel_rot)
-
-  save per-frame details → INFO_new.mat
-
-# 4) Visualization check (frame f*)
-read INFO_new.mat at f*
-select atoms with rotation ∈ [rot_min(g), rot_max(g)] of their grains
-join (id, rot) with dump(f*) → (id, rot, x, y, z)
-write → ROTVerifier_f*.dat
-</code></pre>
-      </section>
-
-      <section id="results" class="card">
-        <h2>How to Read the Results</h2>
-        <ul>
-          <li><strong>ROT(frame, size_bin)</strong>: mean |absolute rotation| in that frame & size bin → overall rotation accumulation.</li>
-          <li><strong>ROT_REL(frame, size_bin)</strong>: mean |relative rotation vs. neighbors| → mismatch sensitive to gradients (often higher in small-size regions).</li>
-          <li><strong>OVITO check</strong>: <code>ROTVerifier_*.dat</code> should show <strong>contiguous</strong>, uniform color bands (main-peak region) with twins/defects effectively removed.</li>
-        </ul>
-        <p class="muted small">Note: exact values depend on the dataset; the pipeline emphasizes <strong>robustness + verifiability</strong>.</p>
-      </section>
-
-      <section id="repro">
-        <h2>Artifacts & Repro</h2>
-        <ul>
-          <li>Mask: <code>noneFCC.dat</code></li>
-          <li>Full details: <code>INFO_new.mat</code></li>
-          <li>Aggregates: <code>ROT.dat</code> / <code>ROT_REL.dat</code> (or console output from <code>Rotation_new.m</code>)</li>
-          <li>Visualization: <code>ROTVerifier_10%_new.dat</code> (example)</li>
-        </ul>
-        <p><strong>Run order</strong>: <code>searchNoneFCC.m</code> → <code>ORTDIFF.m</code> → <code>Rotation_new.m</code> → <code>Visualizer_new.m</code></p>
-        <p><strong>Key params</strong>: <code>strain/meas</code> (frames), <code>bin_size = 5°</code>, main-peak thresholds (60%/55%), folding domain <code>[-45°, 45°]</code>.</p>
-      </section>
-
-      <section id="tips" class="card">
-        <h2>Notes (Pitfalls & Robustness)</h2>
-        <ul>
-          <li>Ensure <strong>ID alignment & equal lengths</strong> across files; scripts include <code>errordlg</code> checks.</li>
-          <li>Unify angle convention at 0% (branch/±90° fixes) to avoid later jumps.</li>
-          <li>If you see multi-peak non-adjacent shapes, inspect twins/defects in OVITO; adjust thresholds or folding domain if needed.</li>
-          <li>Use <strong>absolute values</strong> for aggregation; we care about magnitude, not sign.</li>
-        </ul>
-      </section>
-
-      <section id="ext">
-        <h2>Extensions & Optimization</h2>
-        <ul>
-          <li>Vectorize folding/binning (e.g., <code>wrapTo90</code>); use <code>parfor</code> for scale.</li>
-          <li>Extract thresholds/paths into config; prefer <code>table</code>/<code>struct</code> over magic column indices.</li>
-          <li>Replace main-peak rule with peak-detection + neighbor-merge + confidence, if desired (current approach is robust already).</li>
-        </ul>
-      </section>
-
-      <footer class="small">
-        <div class="hr"></div>
-        <p>This is a closed loop from data → statistics → visual verification, emphasizing engineering simplicity and physical interpretability. Ideal for a project page.</p>
-      </footer>
-    </main>
+  <!-- Placeholders: 1–2 figures showing structural evolution during tensile deformation -->
+  <h2>Structural Evolution During Tensile Deformation</h2>
+  <p class="muted">(Figure placeholders — replace <code>src</code> with your images.)</p>
+  <div class="img">
+    <img src="image/structure_evolution_1.png" alt="Atomistic snapshots and tensile strain contours at multiple strain levels (e.g., 2%, 4%, 7%, 10%)">
   </div>
+  <div class="img">
+    <img src="image/structure_evolution_2.png" alt="Strain partitioning map across gradient grain-size zones">
+  </div>
+</section>
+
+<!-- ===================== PART II: GRAIN ROTATION ALGORITHM ===================== -->
+<section id="grain-rotation">
+  <h1>Part II — Grain Rotation Analysis (Compressed)</h1>
+  <p>
+    A lightweight pipeline converts OVITO‑exported quaternions and LAMMPS dumps into
+    <strong>per‑grain rotation metrics</strong> and a <strong>verifiable point‑cloud</strong>. The method focuses on robustness and quick visual validation.
+  </p>
+
+  <h2>What the Pipeline Does</h2>
+  <ul>
+    <li><strong>Global defect mask</strong>: scan all frames; atoms that are ever non‑FCC are masked out for clean statistics.</li>
+    <li><strong>Baseline orientation (0%)</strong>: unify quaternion→angle convention (z‑axis) to avoid branch/symmetry jumps.</li>
+    <li><strong>Per‑frame rotation</strong>: quaternion→z‑angle; fold into <code>[-45°, 45°]</code> to account for &lt;001&gt; 90° symmetry.</li>
+    <li><strong>Main‑peak selection</strong>: 5° binning per grain; pick the adjacent dominant peak to trim twins/noise.</li>
+    <li><strong>Relative rotation</strong>: difference vs. neighboring grains; aggregate by grain‑size zones (absolute values).</li>
+    <li><strong>OVITO verification</strong>: export only main‑peak atoms (<code>id, rot, x, y, z</code>) for direct color mapping.</li>
+  </ul>
+
+  <!-- ====== Figure Group 1: rotation vs. strain ====== -->
+  <h2>Rotation vs. Strain (by Grain‑Size Zone)</h2>
+  <p class="muted">(Figure group placeholder — e.g., line plots or heatmaps showing the evolution of mean |rotation| and |relative rotation| across strain.)</p>
+  <div class="img">
+    <img src="image/rotation_vs_strain_abs.png" alt="Absolute grain rotation vs. tensile strain across size zones">
+  </div>
+  <div class="img">
+    <img src="image/rotation_vs_strain_relative.png" alt="Relative grain rotation (vs. neighbors) vs. tensile strain across size zones">
+  </div>
+
+  <!-- ====== Figure Group 2: algorithm identification results ====== -->
+  <h2>Identification of Twins, GB Motion, and Bent Grains</h2>
+  <p class="muted">(Figure group placeholder — three panels demonstrating the algorithm’s trimming/identification on real data.)</p>
+  <div class="img">
+    <img src="image/twinning_detection.png" alt="Twinning regions identified/trimmed by main‑peak range">
+  </div>
+  <div class="img">
+    <img src="image/gb_motion_detection.png" alt="Grain boundary motion impact on rotation distribution">
+  </div>
+  <div class="img">
+    <img src="image/bent_grain_detection.png" alt="Bent grains and their rotation spread handled by the peak‑selection logic">
+  </div>
+
+  <p class="note">Tip: keep the exported <code>ROTVerifier_*.dat</code> aligned with your dump IDs so OVITO can color by <code>rot</code> without reindexing.</p>
+</section>
+
 </body>
 </html>
-
