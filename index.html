@@ -59,7 +59,6 @@
       margin:0; background:var(--bg); color:var(--text);
       font-family:var(--font-sans); font-size:var(--step-0); line-height:1.7; letter-spacing:.01em;
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-      padding-top:60px;
     }
 
     a{ color: var(--theme-color-light); text-decoration: underline transparent 2px; text-underline-offset:3px; transition: color .2s, text-decoration-color .2s; }
@@ -70,31 +69,27 @@
     h2{ font-size:var(--step-3); }
     h3{ font-size: clamp(1.08rem, 0.6vw + 1rem, 1.32rem); }
 
-    .container{ max-width:1100px; margin:0 auto; padding:0 1.2rem; }
+    .container{ max-width:1100px; margin:0 auto; padding: 1.2rem 1.2rem 0; }
 
-    /* ======= Glassy top header (no navigation) ======= */
-    #site-header{ position:fixed; inset:0 0 auto 0; height:60px; z-index:1000; display:flex; align-items:center; }
-    #site-header .wrap{ width:100%; display:grid; grid-template-columns:auto 1fr auto; gap:1rem; align-items:center; padding:0 .9rem; }
-    body:not(.scrolled) #site-header{ background:linear-gradient(180deg, color-mix(in srgb, var(--theme-color) 6%, rgba(255,255,255,.58)) 0%, color-mix(in srgb, var(--theme-color) 6%, rgba(255,255,255,.48)) 100%); border-bottom:1px solid color-mix(in srgb, var(--theme-color) 12%, rgba(0,0,0,.04)); box-shadow:0 1px 2px rgba(0,0,0,.04),0 6px 16px rgba(0,0,0,.05); backdrop-filter: blur(12px) saturate(140%) contrast(1.04); -webkit-backdrop-filter: blur(12px) saturate(140%) contrast(1.04); }
-    body.scrolled #site-header{ background:linear-gradient(180deg, color-mix(in srgb, var(--theme-color) 8%, rgba(255,255,255,.90)) 0%, color-mix(in srgb, var(--theme-color) 8%, rgba(255,255,255,.84)) 100%); border-bottom:1px solid color-mix(in srgb, var(--theme-color) 22%, rgba(0,0,0,.08)); box-shadow:0 2px 6px rgba(0,0,0,.06),0 10px 26px rgba(0,0,0,.08); }
-    :root.dark body:not(.scrolled) #site-header{ background: linear-gradient(180deg, color-mix(in srgb, var(--theme-color) 16%, rgba(16,18,22,.78)) 0%, color-mix(in srgb, var(--theme-color) 16%, rgba(16,18,22,.70)) 100%); border-bottom:1px solid color-mix(in srgb, var(--theme-color) 32%, rgba(255,255,255,.08)); box-shadow:0 1px 3px rgba(0,0,0,.55), 0 10px 26px rgba(0,0,0,.44) }
-    :root.dark body.scrolled #site-header{ background: linear-gradient(180deg, color-mix(in srgb, var(--theme-color) 18%, rgba(16,18,22,.86)) 0%, color-mix(in srgb, var(--theme-color) 18%, rgba(16,18,22,.80)) 100%); border-bottom-color: color-mix(in srgb, var(--theme-color) 40%, rgba(255,255,255,.10)); }
-
-    .brand{ display:flex; align-items:center; gap:.6rem; font-weight:700; color:var(--theme-color); text-decoration:none; }
-    .brand .logo{ width:26px; height:26px; display:grid; place-items:center; border-radius:6px; background: color-mix(in srgb, var(--theme-color) 16%, #fff); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--theme-color) 30%, rgba(0,0,0,.08)); font-size:.95rem; }
-    .brand span{ color: var(--theme-color); letter-spacing:.02em; }
-
-    .spacer{ height:1px; }
-
-    /* Theme button */
-    .theme-btn{ display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:9999px; border:1px solid rgba(0,0,0,.12); background:rgba(255,255,255,.65); backdrop-filter: blur(8px) saturate(140%); -webkit-backdrop-filter: blur(8px) saturate(140%); cursor:pointer; font-size:1rem; line-height:1; color:#333; transition: background .2s, border-color .2s, transform .02s, opacity .2s; opacity:.95; }
+    /* Theme button — fixed on top-right */
+    .theme-btn{
+      position: fixed; top: 14px; right: 16px; z-index: 1000;
+      display:inline-flex; align-items:center; justify-content:center;
+      width:36px; height:36px; border-radius:9999px;
+      border:1px solid rgba(0,0,0,.12);
+      background:rgba(255,255,255,.65);
+      backdrop-filter: blur(8px) saturate(140%);
+      -webkit-backdrop-filter: blur(8px) saturate(140%);
+      cursor:pointer; font-size:1rem; line-height:1; color:#333;
+      transition: background .2s, border-color .2s, transform .02s, opacity .2s; opacity:.95;
+    }
     .theme-btn:hover{ opacity:1; border-color:rgba(0,0,0,.2) }
     .theme-btn:active{ transform: translateY(1px); }
     :root.dark .theme-btn{ background: rgba(20,24,31,.72); border-color: rgba(255,255,255,.12); color: var(--text); }
 
     /* ======= Sections ======= */
-    section[id]{ scroll-margin-top: 88px; }
-    .section{ padding: 2.2rem 0; }
+    section[id]{ scroll-margin-top: 24px; }
+    .section{ padding: 1.6rem 0 2.2rem; }
     .section-title{ position:relative; font-size: var(--step-2); margin: 0 0 1rem; }
     .section-title::after{ content:""; position:absolute; left:0; bottom:-.45rem; width:3rem; height:3px; background:var(--theme-color); border-radius:1px; }
 
@@ -113,26 +108,11 @@
     .fig .cap{ font-size:.95rem; color:var(--muted); margin:.5rem auto 0; max-width: min(980px, 92vw); }
 
     .gallery{ display:grid; gap: 1rem; }
-
-    /* Footer note */
-    .foot{ display:flex; justify-content:flex-start; align-items:center; gap:.8rem; padding:1.2rem 0 2rem; border-top:1px dashed var(--border); margin-top:2rem; color:var(--muted); }
-
   </style>
 </head>
 <body>
-  <a id="top"></a>
-
-  <!-- ======= Fixed minimal header (no nav) ======= -->
-  <header id="site-header">
-    <div class="wrap container">
-      <a class="brand" href="index.html" title="Back to Home">
-        <span class="logo"><i class="fa-solid fa-cube"></i></span>
-        <span>TAO&nbsp;Yuhao</span>
-      </a>
-      <div class="spacer"></div>
-      <button id="theme-btn" class="theme-btn" type="button" aria-label="Theme: Light (click to change)" title="Theme: Light"><span id="theme-ico">☀︎</span></button>
-    </div>
-  </header>
+  <!-- floating theme switcher (no site header) -->
+  <button id="theme-btn" class="theme-btn" type="button" aria-label="Theme: Light (click to change)" title="Theme: Light"><span id="theme-ico">☀︎</span></button>
 
   <main class="container">
     <!-- ================= Overview ================= -->
@@ -143,7 +123,9 @@
         This work reports large‑scale molecular dynamics (MD) simulations of a CrCoNi medium‑entropy alloy (MEA) featuring a
         <strong>gradient nano‑grained (GNG)</strong> architecture under <strong>cryogenic</strong> uniaxial tension (≈ 15% true strain).
         We observe strong strain hardening through the elasto‑plastic transition; post‑yield, <em>strain partitioning</em> develops across grain‑size zones. Stacking‑fault activity—used as a proxy for dislocation processes—shows grain‑size dependence and supports
-        <strong>hetero‑deformation induced (HDI)</strong> hardening. The GNG structure exhibits superior flow stress compared to a rule‑of‑mixtures estimate from homogeneous nano‑grained counterparts.
+        <strong>hetero‑deformation induced (HDI)</strong> hardening.
+        In summary, the GNG architecture outperforms a rule‑of‑mixtures estimate based on homogeneous nano‑grained counterparts, and the detailed analysis contrasts GNG with NG, explains the pronounced elasto‑plastic hardening, quantifies strain partitioning,
+        and uses stacking‑fault activity as a tractable proxy for dislocation‑mediated mechanisms.
       </p>
 
       <!-- Single occurrence of the paper PDF link -->
@@ -163,23 +145,15 @@
           <div class="cap">GNG‑structured model under tensile strain. FCC atoms hidden; blue = HCP atoms, red = others.</div>
         </li>
       </ul>
-
-      <ul class="highlights" style="display:flex;flex-wrap:wrap;gap:.45rem .6rem; padding:0; margin: .9rem 0 0; list-style:none;">
-        <li style="background: var(--theme-color-subtle); border-radius:9999px; padding:.16rem .65rem; font-size:.92rem; font-weight:600; letter-spacing:.02em; color: var(--theme-color);">Large‑scale MD of GNG vs. NG</li>
-        <li style="background: var(--theme-color-subtle); border-radius:9999px; padding:.16rem .65rem; font-size:.92rem; font-weight:600; letter-spacing:.02em; color: var(--theme-color);">Elasto‑plastic transition & hardening</li>
-        <li style="background: var(--theme-color-subtle); border-radius:9999px; padding:.16rem .65rem; font-size:.92rem; font-weight:600; letter-spacing:.02em; color: var(--theme-color);">Strain partitioning across zones</li>
-        <li style="background: var(--theme-color-subtle); border-radius:9999px; padding:.16rem .65rem; font-size:.92rem; font-weight:600; letter-spacing:.02em; color: var(--theme-color);">Stacking‑fault activity proxy</li>
-        <li style="background: var(--theme-color-subtle); border-radius:9999px; padding:.16rem .65rem; font-size:.92rem; font-weight:600; letter-spacing:.02em; color: var(--theme-color);">HDI hardening, superior flow stress</li>
-      </ul>
     </section>
 
     <!-- ================= Rotation Algorithm ================= -->
     <section id="rotation" class="section">
       <h2 class="section-title">Part II — Grain Rotation Analysis Algorithm</h2>
       <p>
-        I developed a pipeline that converts OVITO‑exported quaternions and LAMMPS dumps into
+        We developed a pipeline that converts OVITO‑exported quaternions and LAMMPS dumps into
         <strong>per‑grain rotation metrics</strong> plus an <strong>OVITO‑verifiable point cloud</strong>.
-        The pipeline is designed for robustness in the presence of twinning, grain‑boundary motion, and bent grains.
+        The pipeline is robust to twinning, grain‑boundary motion, and bent grains.
       </p>
 
       <div class="fig">
@@ -219,17 +193,11 @@
           <figcaption class="cap">Bent grains and their broadened rotation spread are handled through the peak‑selection logic.</figcaption>
         </figure>
       </div>
-
-      <div class="foot">© TAO Yuhao · Atomistic Simulation of Alloy</div>
     </section>
   </main>
 
-  <!-- ======= Scripts: elevation + theme switch (no scroll‑spy, no nav) ======= -->
+  <!-- ======= Script: theme switch (no header, no scroll elevation) ======= -->
   <script>
-    // Elevation on scroll
-    const onScrollShadow = () => document.body.classList.toggle('scrolled', window.scrollY > 4);
-    window.addEventListener('scroll', onScrollShadow); onScrollShadow();
-
     // === Single Button Theme Switcher (☀︎ → ☾ → ◐) ===
     (function(){
       const docEl = document.documentElement;
