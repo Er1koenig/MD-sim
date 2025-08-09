@@ -19,6 +19,8 @@
     border:1px transparent #ccc;
     border-radius:8px;
   }
+  .video-wrapper { margin: 1rem 0; text-align: center; }
+  video { width: 700px; height: auto; border: 1px solid #ccc; border-radius: 8px; }
   /* subtle outlined link‑button for the PDF */
   .download-link{
     display:inline-block;
@@ -59,13 +61,12 @@
     <li>GNG structure shows superior flow stress compared with the mixture rule estimate from homogeneous NG cases.</li>
   </ul>
 
-  <!-- Placeholders: 1–2 figures showing structural evolution during tensile deformation -->
   <h2>Structural Evolution During Tensile Deformation</h2>
-  <div class="img">
-    <img src="image/structure_evolution_1.png" alt="Atomistic snapshots and tensile strain contours at multiple strain levels (e.g., 2%, 4%, 7%, 10%)">
-  </div>
-  <div class="img">
-    <img src="image/structure_evolution_2.png" alt="Strain partitioning map across gradient grain-size zones">
+  <div class="video-wrapper">
+      <video id="grainGrowthDemo" controls preload="metadata" poster="preview.png">
+          <source src="image/mdsim_tensile.mp4" type="video/mp4" />
+          Your browser does not support HTML5 video.
+      </video>
   </div>
 </section>
 
