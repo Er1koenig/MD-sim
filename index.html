@@ -73,40 +73,41 @@
 <section id="grain-rotation">
   <h1>Part II — Grain Rotation Analysis Algorithm</h1>
   <p>
-    A lightweight pipeline converts OVITO‑exported quaternions and LAMMPS dumps into
-    <strong>per‑grain rotation metrics</strong> and a <strong>verifiable point‑cloud</strong>. The method focuses on robustness and quick visual validation.
+    A lean pipeline converts OVITO-exported quaternions and LAMMPS dumps into
+    <strong>per-grain rotation metrics</strong> plus an <strong>OVITO-verifiable point cloud</strong>,
+    optimized for robustness and fast visual validation.
   </p>
 
   <h2>What the Pipeline Does</h2>
   <ul>
-    <li><strong>Global defect mask</strong>: scan all frames; atoms that are ever non‑FCC are masked out for clean statistics.</li>
-    <li><strong>Baseline orientation (0%)</strong>: unify quaternion→angle convention (z‑axis) to avoid branch/symmetry jumps.</li>
-    <li><strong>Per‑frame rotation</strong>: quaternion→z‑angle; fold into <code>[-45°, 45°]</code> to account for &lt;001&gt; 90° symmetry.</li>
-    <li><strong>Main‑peak selection</strong>: 5° binning per grain; pick the adjacent dominant peak to trim twins/noise.</li>
-    <li><strong>Relative rotation</strong>: difference vs. neighboring grains; aggregate by grain‑size zones (absolute values).</li>
-    <li><strong>OVITO verification</strong>: export only main‑peak atoms (<code>id, rot, x, y, z</code>) for direct color mapping.</li>
+    <li><strong>Global defect mask</strong>: scan all frames and flag atoms that are non-FCC at least once; exclude flagged atoms from all statistics.</li>
+    <li><strong>Baseline orientation (0%)</strong>: normalize the quaternion→angle convention (z-axis) to eliminate branch/symmetry jumps.</li>
+    <li><strong>Per-frame rotation</strong>: convert rotation quaternions to z-angles and wrap to <code>[-45°, 45°]</code> to fold ⟨001⟩ 90° symmetry.</li>
+    <li><strong>Main-peak selection</strong>: 5° grain-wise histogram; select the adjacent dominant peak to suppress twins/noise.</li>
+    <li><strong>Relative rotation</strong>: compute each grain’s mean difference to its neighbors; aggregate absolute values by grain-size zone.</li>
+    <li><strong>OVITO verification</strong>: export only main-peak atoms (<code>id, rot, x, y, z</code>) for direct color mapping.</li>
   </ul>
 
   <!-- ====== Figure Group 1: rotation vs. strain ====== -->
   <h2>Rotation vs. Strain</h2>
   <p style="margin-left:1.2rem;margin-left:3rem;">Absolute rotation angle vs. applied tensile strain on a GNG-structured model.</p>
   <div class="img">
-    <img src="image/rot_evolution.png" alt="Absolute rotation angle vs. tensile strain (from left to right: 2%, 4%, 5%, 7% and 10%)">
+    <img src="image/rot_evolution.png" alt="Absolute rotation angle vs. applied tensile strain (from left to right: 2%, 4%, 5%, 7% and 10%)">
   </div>
 
   <!-- ====== Figure Group 2: algorithm identification results ====== -->
   <h2>Robustness in Twins, GB Motion, and Bent Grains Scenarios</h2>
-  <p style="margin-left:1.2rem;margin-left:3rem;">Twinning FCC atoms are detected and excluded.</p>
+  <p style="margin-left:1.2rem;margin-left:3rem;">Twinning regions identified and trimmed via main-peak range.</p>
   <div class="img">
     <img src="image/twinning.png" alt="Twinning regions identified/trimmed by main‑peak range">
   </div>
 
-  <p style="margin-left:1.2rem;margin-left:3rem;">FCC atoms of another grain are detected and excluded.</p>
+  <p style="margin-left:1.2rem;margin-left:3rem;">FCC atoms of another grain are excluded.</p>
   <div class="img">
     <img src="image/gb_motion.png" alt="Grain boundary motion impact on rotation distribution">
   </div>
 
-  <p style="margin-left:1.2rem;margin-left:3rem;">FCC atoms in a bending grain are preserved.</p>
+  <p style="margin-left:1.2rem;margin-left:3rem;">Bent grains and their broadened rotation spread handled by the peak-selection logic.</p>
   <div class="img">
     <img src="image/bending.png" alt="Bent grains and their rotation spread handled by the peak‑selection logic">
   </div>
