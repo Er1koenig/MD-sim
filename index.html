@@ -103,10 +103,12 @@
     .video-wrap{ display:grid; place-items:center; margin:1rem 0 0; }
     video{ width:min(900px, 95vw); height:auto; border-radius: 12px; border:1px solid var(--border); box-shadow: var(--shadow); }
 
-    .fig{ background: var(--surface); border:1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: .8rem; margin: 1.2rem 0; max-width:850px;}
-    .fig img{ width:min(1000px, 95vw); height:auto; display:block; margin:0 auto; border-radius:10px; max-width:980px;}
-    .fig .cap{ font-size:.95rem; color:var(--muted); margin:.5rem auto 0; max-width: min(980px, 92vw); }
-    
+    /* Figures (card style with proper rounded corners) */
+    .fig{ background: var(--surface); border:1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); padding: .8rem; margin: 1.2rem 0; max-width:900px;}
+    .fig .media{ border-radius:10px; overflow:hidden; }
+    .fig .media img{ display:block; width:min(1000px, 95vw); max-width:100%; height:auto; margin:0 auto; border-radius:0; border:none; }
+    .cap{ font-size:.95rem; color:var(--muted); margin:.5rem auto 0; max-width:min(980px, 92vw); }
+
     .gallery{ display:grid; gap: 1rem; }
   </style>
 </head>
@@ -151,6 +153,13 @@
         The pipeline is robust to twinning, grain‑boundary motion, and bent grains.
       </p>
 
+      <figure class="fig">
+        <div class="media">
+          <img src="image/rot_evolution.png" alt="Absolute rotation angle vs. applied tensile strain">
+        </div>
+        <figcaption class="cap">Absolute rotation angle vs. applied tensile strain on a GNG‑structured model.</figcaption>
+      </figure>
+      
       <div class="gallery">
         <figure class="fig">
           <img src="image/rot_evolution.png" alt="Absolute rotation angle vs. applied tensile strain" />
