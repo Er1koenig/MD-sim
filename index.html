@@ -107,6 +107,12 @@
     .fig img{ width:min(1000px, 95vw); height:auto; display:block; margin:0 auto; border-radius:10px; }
     .fig .cap{ font-size:.95rem; color:var(--muted); margin:.5rem auto 0; max-width: min(980px, 92vw); }
 
+    /* 新增：图片包裹层，负责裁剪 */
+    .fig .media { border-radius:10px; overflow:hidden; }
+    
+    /* 图片自己不再设圆角，铺满包裹层即可 */
+    .fig .media img { display:block; width:100%; height:auto; border-radius:0; }
+
     .gallery{ display:grid; gap: 1rem; }
   </style>
 </head>
@@ -151,12 +157,12 @@
         The pipeline is robust to twinning, grain‑boundary motion, and bent grains.
       </p>
 
-      <div class="gallery">
-        <figure class="fig">
+      <figure class="fig">
+        <div class="media">
           <img src="image/rot_evolution.png" alt="Absolute rotation angle vs. applied tensile strain" />
-          <figcaption class="cap">Absolute rotation angle vs. applied tensile strain on a GNG‑structured model.</figcaption>
-        </figure>
-      </div>
+        </div>
+        <figcaption class="cap">Absolute rotation angle vs. applied tensile strain on a GNG‑structured model.</figcaption>
+      </figure>
 
       <div class="fig" style="padding:1rem;">
         <h3 style="margin:.2rem 0 .6rem;">What the Pipeline Does</h3>
